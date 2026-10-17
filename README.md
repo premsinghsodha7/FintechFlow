@@ -1,40 +1,49 @@
 # FintechFlow
 
-> A fictional digital banking app built with Kotlin and Jetpack Compose. No real accounts, payments, or personal data are used.
+> A fictional digital banking app built with Kotlin and Jetpack Compose. It uses local sample data only; no real accounts or payments are connected.
 
-FintechFlow is a portfolio project for exploring clear financial UI, reusable Compose components, and practical Android app structure. The current starter includes a responsive account dashboard and sample activity backed by local, fictional data.
+FintechFlow is a portfolio app demonstrating a polished account overview and simple transfer flow, with UI state separated from the data source.
 
-## Preview
+## Features
 
-The first screen presents a sample balance, a masked card number, quick actions, and recent activity. All amounts, names, and transactions are illustrative.
+- Home dashboard with available balance, quick actions, and recent transactions.
+- Activity list with searchable transaction descriptions.
+- Transfer form with amount validation and immediate demo balance updates.
+- Cards screen with a masked sample card and safety guidance.
+- Material 3 UI with bottom navigation and lifecycle-aware state collection.
+- Repository and ViewModel boundaries that can later be backed by a real service.
 
-## Tech
-
-- Kotlin
-- Jetpack Compose and Material 3
-- Android Gradle Plugin 8.7.3; Gradle 8.9; JDK 17
-- minSdk 24, targetSdk 35
+Every name, card number, and amount is fictional and held in memory. Transfers reset when the app process restarts.
 
 ## Run
 
 1. Install Android Studio and an Android SDK for API 35.
-2. Open this repository in Android Studio.
-3. Use JDK 17 for Gradle, sync, then run the `app` configuration on an emulator or device.
+2. Open the repository in Android Studio and let Gradle sync.
+3. Run the `app` configuration on an emulator or device (JDK 17).
 
-This starter does not include the Gradle wrapper yet. Android Studio can generate/use a compatible local Gradle installation.
+From a terminal, use `./gradlew :app:installDebug` with a connected emulator/device. Run the unit tests with `./gradlew testDebugUnitTest`.
 
-## Project structure
+## Architecture
 
 ```text
 app/src/main/java/com/premsingh/fintechflow/
-  MainActivity.kt  # dashboard UI and sample transaction model
+  data/       DemoFinanceRepository (in-memory implementation)
+  domain/     Models, amount parsing/formatting, repository contract
+  ui/         Compose screens and FinanceViewModel
 ```
 
-The first iteration keeps the sample data local and the UI focused. Planned next steps: extract design tokens and UI components, add navigation and screen-level state, add unit/UI tests, and wire a mock API behind a repository interface.
+The demo repository is the only data source. `FinanceViewModel` exposes immutable state to the Compose UI, and money input is parsed into minor units to avoid floating-point rounding.
 
-## Safety and scope
+## Build
 
-FintechFlow is a UI and architecture learning project. It is not a bank, financial service, or production payment app. Never add real customer data, API credentials, or payment information.
+- Kotlin 2.0.21, Jetpack Compose, Material 3
+- Android Gradle Plugin 8.7.3, Gradle 8.9, JDK 17
+- minSdk 24, targetSdk 35
+- GitHub Actions runs unit tests and assembles the debug app on pushes and pull requests.
+
+## Scope
+
+FintechFlow is a UI and architecture learning project, not a bank or production payment app. Do not enter real personal, account, or payment information. No backend, authentication, or payment processor is included.
 
 ## License
 
