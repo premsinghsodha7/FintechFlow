@@ -1,6 +1,7 @@
 package com.premsingh.fintechflow.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -39,6 +40,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -64,7 +66,7 @@ private data class FinancePalette(val label: String, val primary: Color, val can
 private val financePalettes = listOf(
     FinancePalette("Harbor", Color(0xFF173C49), Color(0xFFF4F7F8), Color(0xFFB9F2D5)),
     FinancePalette("Evergreen", Color(0xFF315D48), Color(0xFFF2F6F0), Color(0xFFD9EAD7)),
-    FinancePalette("Midnight", Color(0xFF14232C), Color(0xFFEAF0F2), Color(0xFFC4DDF0))
+    FinancePalette("Glacier", Color(0xFF35556B), Color(0xFFF0F4F7), Color(0xFFD6E3F0))
 )
 
 @Composable
@@ -76,6 +78,10 @@ fun FintechFlowApp(financeViewModel: FinanceViewModel = viewModel()) {
     MaterialTheme(colorScheme = lightColorScheme(
         primary = palette.primary,
         secondary = palette.accent,
+        primaryContainer = palette.accent.copy(alpha = .32f),
+        onPrimaryContainer = Ink,
+        secondaryContainer = palette.accent.copy(alpha = .32f),
+        onSecondaryContainer = Ink,
         background = palette.canvas,
         surface = Color.White,
         onBackground = Ink,
@@ -124,11 +130,7 @@ private fun HomeScreen(state: DashboardState, padding: PaddingValues, onTransfer
                     Text("Good morning,", color = Muted, fontSize = 14.sp)
                     Text(state.accountHolder, color = Ink, fontSize = 22.sp, fontWeight = FontWeight.Bold)
                 }
-                Surface(shape = CircleShape, color = Mint, modifier = Modifier.size(44.dp)) {
-                    androidx.compose.foundation.layout.Box(contentAlignment = Alignment.Center) {
-                        Text("AM", color = Navy, fontWeight = FontWeight.Bold, fontSize = 13.sp)
-                    }
-                }
+                Image(painter = painterResource(com.premsingh.fintechflow.R.drawable.brand_logo), contentDescription = "FintechFlow logo", modifier = Modifier.size(48.dp))
             }
         }
         item { BalanceCard(state.balanceMinor, state.accountLastFour) }

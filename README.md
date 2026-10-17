@@ -1,11 +1,13 @@
 # FintechFlow
 
+<p align="center"><img src="https://raw.githubusercontent.com/premsinghsodha7/FintechFlow/main/brand-logo.png" alt="FintechFlow logo" width="150"></p>
+
 > A fictional digital banking app built with Kotlin and Jetpack Compose. It uses local sample data only; no real accounts or payments are connected.
 
 FintechFlow is a portfolio app demonstrating a polished account overview and simple transfer flow, with UI state separated from the data source.
 ## App preview
 
-![FintechFlow running on the Android emulator](screenshots/app-preview.jpg)
+![FintechFlow running on the Android emulator](https://raw.githubusercontent.com/premsinghsodha7/FintechFlow/main/screenshots/app-preview.jpg)
 
 *Live screenshot captured from a Pixel 9 Pro emulator running Android 15 (API 35).*
 
@@ -17,7 +19,7 @@ FintechFlow is a portfolio app demonstrating a polished account overview and sim
 - Transfer form with amount validation and immediate demo balance updates.
 - Cards screen with a freeze toggle, editable demo spend limit, theme picker, and safety guidance.
 - Spending insights with income, expense, and category summaries.
-- Three selectable color palettes: Harbor, Evergreen, and Midnight.
+- Three selectable color palettes: Harbor, Evergreen, and Glacier.
 - Material 3 UI with bottom navigation and lifecycle-aware state collection.
 - Repository and ViewModel boundaries that can later be backed by a real service.
 
