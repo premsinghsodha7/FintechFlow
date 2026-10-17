@@ -3,6 +3,12 @@
 > A fictional digital banking app built with Kotlin and Jetpack Compose. It uses local sample data only; no real accounts or payments are connected.
 
 FintechFlow is a portfolio app demonstrating a polished account overview and simple transfer flow, with UI state separated from the data source.
+## App preview
+
+![FintechFlow polished app preview](screenshots/app-preview.jpg)
+
+*Portfolio mockup composed from the current Compose layout and sample content.*
+
 
 ## Features
 
