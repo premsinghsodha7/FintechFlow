@@ -5,17 +5,19 @@
 FintechFlow is a portfolio app demonstrating a polished account overview and simple transfer flow, with UI state separated from the data source.
 ## App preview
 
-![FintechFlow polished app preview](screenshots/app-preview.jpg)
+![FintechFlow running on the Android emulator](screenshots/app-preview.jpg)
 
-*Portfolio mockup composed from the current Compose layout and sample content.*
+*Live screenshot captured from a Pixel 9 Pro emulator running Android 15 (API 35).*
 
 
 ## Features
 
 - Home dashboard with available balance, quick actions, and recent transactions.
-- Activity list with searchable transaction descriptions.
+- Activity list with category filters for income, food, and shopping.
 - Transfer form with amount validation and immediate demo balance updates.
-- Cards screen with a masked sample card and safety guidance.
+- Cards screen with a freeze toggle, editable demo spend limit, theme picker, and safety guidance.
+- Spending insights with income, expense, and category summaries.
+- Three selectable color palettes: Harbor, Evergreen, and Midnight.
 - Material 3 UI with bottom navigation and lifecycle-aware state collection.
 - Repository and ViewModel boundaries that can later be backed by a real service.
 

@@ -20,6 +20,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -32,6 +33,7 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -55,23 +57,32 @@ private val Mint = Color(0xFFB9F2D5)
 private val Navy = Color(0xFF173C49)
 
 private enum class Destination(val label: String, val marker: String) {
-    Home("Home", "⌂"), Activity("Activity", "↕"), Transfer("Pay", "↗"), Cards("Cards", "▣")
+    Home("Home", "⌂"), Activity("Activity", "↕"), Transfer("Pay", "↗"), Cards("Cards", "▣"), Insights("Insights", "▥")
 }
+
+private data class FinancePalette(val label: String, val primary: Color, val canvas: Color, val accent: Color)
+private val financePalettes = listOf(
+    FinancePalette("Harbor", Color(0xFF173C49), Color(0xFFF4F7F8), Color(0xFFB9F2D5)),
+    FinancePalette("Evergreen", Color(0xFF315D48), Color(0xFFF2F6F0), Color(0xFFD9EAD7)),
+    FinancePalette("Midnight", Color(0xFF14232C), Color(0xFFEAF0F2), Color(0xFFC4DDF0))
+)
 
 @Composable
 fun FintechFlowApp(financeViewModel: FinanceViewModel = viewModel()) {
     val dashboard by financeViewModel.dashboard.collectAsStateWithLifecycle()
     var destination by rememberSaveable { mutableStateOf(Destination.Home) }
+    var paletteIndex by rememberSaveable { mutableIntStateOf(0) }
+    val palette = financePalettes[paletteIndex]
     MaterialTheme(colorScheme = lightColorScheme(
-        primary = Navy,
-        secondary = Mint,
-        background = Canvas,
+        primary = palette.primary,
+        secondary = palette.accent,
+        background = palette.canvas,
         surface = Color.White,
         onBackground = Ink,
         onSurface = Ink
     )) {
         Scaffold(
-            containerColor = Canvas,
+            containerColor = palette.canvas,
             bottomBar = {
                 NavigationBar(containerColor = Color.White) {
                     Destination.entries.forEach { item ->
@@ -93,7 +104,8 @@ fun FintechFlowApp(financeViewModel: FinanceViewModel = viewModel()) {
                     padding = padding,
                     onSend = financeViewModel::sendTransfer
                 )
-                Destination.Cards -> CardsScreen(dashboard, padding)
+                Destination.Cards -> CardsScreen(dashboard, padding, paletteIndex, onPaletteChange = { paletteIndex = it })
+                Destination.Insights -> InsightsScreen(dashboard, padding)
             }
         }
     }
@@ -140,6 +152,9 @@ private fun HomeScreen(state: DashboardState, padding: PaddingValues, onTransfer
 
 @Composable
 private fun ActivityScreen(state: DashboardState, padding: PaddingValues) {
+    var selectedCategory by rememberSaveable { mutableStateOf("All") }
+    val categories = listOf("All", "Income", "Food & drink", "Shopping")
+    val visible = state.transactions.filter { selectedCategory == "All" || it.category == selectedCategory }
     LazyColumn(
         modifier = Modifier.fillMaxSize().padding(padding),
         contentPadding = PaddingValues(20.dp),
@@ -149,7 +164,8 @@ private fun ActivityScreen(state: DashboardState, padding: PaddingValues) {
             Text("Activity", color = Ink, fontSize = 28.sp, fontWeight = FontWeight.Bold)
             Text("Your recent sample transactions", color = Muted, modifier = Modifier.padding(top = 4.dp))
         }
-        items(state.transactions, key = { it.id }) { TransactionRow(it) }
+        item { Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) { categories.forEach { category -> FilterChip(selected = selectedCategory == category, onClick = { selectedCategory = category }, label = { Text(category) }) } } }
+        items(visible, key = { it.id }) { TransactionRow(it) }
         item { SafetyNote() }
     }
 }
@@ -206,7 +222,9 @@ private fun TransferScreen(
 }
 
 @Composable
-private fun CardsScreen(state: DashboardState, padding: PaddingValues) {
+private fun CardsScreen(state: DashboardState, padding: PaddingValues, paletteIndex: Int, onPaletteChange: (Int) -> Unit) {
+    var frozen by rememberSaveable { mutableStateOf(false) }
+    var monthlyLimit by rememberSaveable { mutableStateOf("1200") }
     Column(
         modifier = Modifier.fillMaxSize().padding(padding).padding(20.dp),
         verticalArrangement = Arrangement.spacedBy(20.dp)
@@ -215,7 +233,41 @@ private fun CardsScreen(state: DashboardState, padding: PaddingValues) {
         BalanceCard(state.balanceMinor, state.accountLastFour)
         Text("Virtual demo card", color = Ink, fontWeight = FontWeight.SemiBold, fontSize = 18.sp)
         Text("Online purchases · sample card only", color = Muted)
+        androidx.compose.material3.OutlinedButton(onClick = { frozen = !frozen }, modifier = Modifier.fillMaxWidth()) { Text(if (frozen) "Unfreeze demo card" else "Freeze demo card") }
+        Text(if (frozen) "Card is paused in this demo." else "Card is ready in this demo.", color = Muted, fontSize = 13.sp)
+        Text("Monthly spend limit", color = Ink, fontWeight = FontWeight.SemiBold)
+        OutlinedTextField(monthlyLimit, { monthlyLimit = it.filter(Char::isDigit).take(5) }, modifier = Modifier.fillMaxWidth(), label = { Text("USD limit") }, leadingIcon = { Text("$", modifier = Modifier.padding(start = 12.dp)) }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), singleLine = true)
+        Text("App theme", color = Ink, fontWeight = FontWeight.SemiBold)
+        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) { financePalettes.forEachIndexed { index, option -> FilterChip(selected = paletteIndex == index, onClick = { onPaletteChange(index) }, label = { Text(option.label) }) } }
         Text("This screen does not issue or connect to a real payment card.", color = Muted, fontSize = 13.sp)
+    }
+}
+
+@Composable
+private fun InsightsScreen(state: DashboardState, padding: PaddingValues) {
+    val income = state.transactions.filter { it.isCredit }.sumOf { it.amountMinor }
+    val spending = state.transactions.filterNot { it.isCredit }.sumOf { it.amountMinor }
+    Column(Modifier.fillMaxSize().padding(padding).padding(20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        Text("Spending insights", color = Ink, fontSize = 28.sp, fontWeight = FontWeight.Bold)
+        Text("A snapshot from your fictional demo activity", color = Muted)
+        MetricCard("Income this month", formatUsd(income), Color(0xFFE0F3E8))
+        MetricCard("Spending this month", formatUsd(spending), Color(0xFFFFE9D8))
+        Text("Top categories", color = Ink, fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
+        state.transactions.filterNot { it.isCredit }.groupBy { it.category }.forEach { (category, transactions) ->
+            val total = transactions.sumOf { it.amountMinor }
+            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) { Text(category, color = Ink); Text(formatUsd(total), color = Muted) }
+                androidx.compose.material3.LinearProgressIndicator(progress = { (total.toFloat() / spending.coerceAtLeast(1)).coerceIn(0f, 1f) }, modifier = Modifier.fillMaxWidth(), color = Navy)
+            }
+        }
+        SafetyNote()
+    }
+}
+
+@Composable
+private fun MetricCard(title: String, value: String, color: Color) {
+    Card(shape = RoundedCornerShape(20.dp), colors = CardDefaults.cardColors(containerColor = color), modifier = Modifier.fillMaxWidth()) {
+        Column(Modifier.padding(18.dp)) { Text(title, color = Muted); Text(value, color = Ink, fontSize = 24.sp, fontWeight = FontWeight.Bold) }
     }
 }
 
