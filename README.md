@@ -6,7 +6,7 @@ FintechFlow is a portfolio project for exploring clear financial UI, reusable Co
 
 ## Preview
 
-The first screen presents a masked sample balance, quick actions, and recent activity. All amounts, names, and transactions are illustrative.
+The first screen presents a sample balance, a masked card number, quick actions, and recent activity. All amounts, names, and transactions are illustrative.
 
 ## Tech
 
