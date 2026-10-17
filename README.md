@@ -26,7 +26,7 @@ From a terminal, use `./gradlew :app:installDebug` with a connected emulator/dev
 ## Architecture
 
 ```text
-app/src/main/java/com/premsingh/fintechflow/
+app/src/main/kotlin/com/premsingh/fintechflow/
   data/       DemoFinanceRepository (in-memory implementation)
   domain/     Models, amount parsing/formatting, repository contract
   ui/         Compose screens and FinanceViewModel
